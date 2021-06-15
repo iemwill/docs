@@ -1,0 +1,103 @@
+= RSK
+W. L. Laubenheimer, blockchain@laubenheimer.eu
+:toc:
+:icons: font
+:imagesdir: pix/
+
+{sp} +
+{sp} +
+{sp} +
+
+Currently (30.04.2020) there are less than `173 BTC` (more than `1.5 Million USD`) converted to R-BTC.
+
+{sp} +
+
+Checkout the holding of the bridge-contract and substract it from 21 Million:
+
+https://explorer.rsk.co/address/0x0000000000000000000000000000000001000006
+
+<<<
+
+== necessary environment
+
+First of all you need to install electrum as described here https://developers.rsk.co/rsk/rbtc/conversion/
+
+These are the faucets we will use:
+
+- Bitcoin Testnet Faucet: https://testnet-faucet.mempool.co/
+- RSK Testnet Faucet: https://faucet.rsk.co/
+- RIF Testnet Faucet: https://faucet.rifos.org/
+
+Now you need to setup metamask with tRSK-configuration as described here:
+
+- https://developers.rsk.co/tutorials/ethereum-devs/remix-and-metamask-with-rsk-testnet/
+
+or go with your account to switch networks and click on bottom add with following input:
+
+image::metamask-tRSKsetup.png[600, 300, align="center"]
+
+<<<
+
+== BTC <-> R-BTC "conversion"
+
+We use here the Testnetwork of both systems following this guide:
+
+- https://developers.rsk.co/rsk/rbtc/conversion/
+
+
+To get the corresponding tR-BTC address from your tBTC address you need to use the following tool:
+
+- https://github.com/rsksmart/utils
+
+TIP: The repo threw a lot of errors caused by webpack. If you get errors too, try the following instead:
+
+- https://github.com/iemwill/utils
+
+
+And then you need to get in contact with the Team via your preferred channel and ask for a whitelisting on the bridge-contract.
+
+IMPORTANT: Deliver the tBTC address you want to use from the electrum wallet.
+
+
+Next step is calling the bridge with `getFederationAddress()` to get the BTC address you need to send your BTC.
+
+First i tried the following contract:
+
+
+```
+pragma solidity ^0.5.0;
+pragma experimental ABIEncoderV2;
+
+contract rBTCbridge {
+    function getAddress () public returns(bool, bytes memory) {
+        address aim = 0x0000000000000000000000000000000001000006;
+        return aim.delegatecall(
+            abi.encodeWithSignature(
+                "getFederationAddress()"
+            )
+        );
+    }
+}
+```
+
+but since i got deploying problems with remix this time, i used https://www.myetherwallet.com/ connected via metamask and choosed the contract section to insert:
+
+- Address: `0x0000000000000000000000000000000001000006`
+- ABI/JSON-Interface: `[{"name":"getFederationAddress","type":"function","constant":true,"inputs":[],"outputs":[{"name":"","type":"string"}]}]`
+-
+
+TIP: This should return `2N1N5mdHWmRUfv49f7GnUeFfuyLcBQK7hj2`.
+
+
+Transfer now 0.01 tBTC from the whitelisted tBTC address to the returned address. (as here TxID: `918fd47aac4ccdcccaf601bd9457487e2dc2781a1a6c7ce194d9703c993999c3`).
+
+After around 15 confirmations you see the transferred tRBTC to the corresponding address (derived via @rsksmart/utils from the BTC private key. (In my case from `mra2W7HABdV3qxy5i3znrYiJrfm5tH2yUT`: https://explorer.testnet.rsk.co/address/0x9dcea53b9efc7b451996f510adb9e8f54eb4243a)
+
+NOTE: Until 29th of April 2020 the explorer doesn't show internal transactions like etherscan.io we just see the balance is there and no incoming transaction.
+
+
+=== tR-BTC to BTC
+
+Just send an amount (min. `0.005`) to the bridge (`0x0000000000000000000000000000000001000006`) and wait...
+
+This was mine https://explorer.testnet.rsk.co/tx/0xbd57921340808a94ba336a0b9cdd307e9aa8750fba48a70630a45dd570212b0f[0xbd57921340808a94ba336a0b9cdd307e9aa8750fba48a70630a45dd570212b0f] and after 200 Blocks there was no tBTC at `mra2W7HABdV3qxy5i3znrYiJrfm5tH2yUT`.

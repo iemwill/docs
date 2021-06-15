@@ -1,0 +1,30 @@
+= asciidoctor-pdf
+Author, email@author.var
+
+```
+:toc:
+:icons: font
+:imagesdir: pix/
+
+{sp} +
+{sp} +
+{sp} +
+```
+
+== create
+
+.pdf
+
+  $ asciidoctor-pdf -a rouge-style=monokai input_file.adoc
+
+.html5
+
+  $ asciidoctor --backend html5 -a data-uri input_file.adoc
+
+.docx
+
+```
+INPUT_ADOC=my_input_file.adoc
+asciidoctor --backend docbook --out-file - $INPUT_ADOC| \
+pandoc --from docbook --to docx --output $INPUT_ADOC.docx
+```

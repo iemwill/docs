@@ -1,0 +1,16 @@
+= template
+Author, email@author.var
+:toc:
+:icons: font
+:imagesdir: dir/
+
+<<<
+
+== 1 section
+
+{sp} +
+{sp} +
+
+image::name.png[300, 500, align="center"]
+
+https://link.de[description]
